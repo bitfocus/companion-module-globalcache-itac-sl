@@ -97,7 +97,18 @@ instance.prototype.actions = function(system) {
 					 type:    'textinput',
 					 label:   'Type Command',
 					 id:      'sl'
-				}
+				},
+				{
+					 type:    'dropdown',
+					 label:   'Line Termination',
+					 id:      'term',
+					 default: '\r',
+					 choices:	[
+						 { id: '\r',		label: 'Carriage Return - \\r' },
+						 { id: '\n',		label: 'Line Feed - \\n' },
+						 { id: '\r\n',		label: 'Carriage Return/Line Feed - \\r\\n' },
+					 ]
+				},
 			]
 		}
 	});
@@ -120,7 +131,7 @@ instance.prototype.action = function(action) {
 		debug('sending tcp', cmd, "to", self.config.host);
 
 		if (self.socket !== undefined && self.socket.connected) {
-			self.socket.send(cmd + "\r\n");
+			self.socket.send(cmd + opt.term);
 		} else {
 			debug('Socket not connected :(');
 		}
