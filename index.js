@@ -90,7 +90,7 @@ instance.prototype.actions = function(system) {
 	var self = this;
 	self.system.emit('instance_actions', self.id, {
 
-		'command':       {
+		'command': {
 			label: 'Command',
 			options: [
 				{
@@ -110,6 +110,16 @@ instance.prototype.actions = function(system) {
 					 ]
 				},
 			]
+		},
+		'hexcommand': {
+			label: 'HEX based command',
+			options: [
+				{
+					 type:    'textinput',
+					 label:   'Type hex values to send',
+					 id:      'hex'
+				}
+			]
 		}
 	});
 }
@@ -122,7 +132,16 @@ instance.prototype.action = function(action) {
 	switch (action.action) {
 
 		case 'command':
-			cmd += opt.sl;
+			cmd += opt.sl + opt.term;
+			break;
+
+		case 'hexcommand':
+			var hex = opt.hex.replace(/[^A-Fa-f0-9]/g,'');
+			if (hex.length % 2 == 1) {
+				hex = '0' + hex;
+			}
+
+			cmd = new Buffer(hex, 'hex');
 			break;
 	}
 
@@ -131,7 +150,7 @@ instance.prototype.action = function(action) {
 		debug('sending tcp', cmd, "to", self.config.host);
 
 		if (self.socket !== undefined && self.socket.connected) {
-			self.socket.send(cmd + opt.term);
+			self.socket.send(cmd);
 		} else {
 			debug('Socket not connected :(');
 		}
