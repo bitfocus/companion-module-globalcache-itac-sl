@@ -104,9 +104,10 @@ instance.prototype.actions = function(system) {
 					 id:      'term',
 					 default: '\r',
 					 choices:	[
-						 { id: '\r',		label: 'Carriage Return - \\r' },
-						 { id: '\n',		label: 'Line Feed - \\n' },
-						 { id: '\r\n',		label: 'Carriage Return/Line Feed - \\r\\n' },
+						{ id: '',     label: 'No termination' },
+						{ id: '\r',   label: 'Carriage Return - \\r' },
+						{ id: '\n',   label: 'Line Feed - \\n' },
+						{ id: '\r\n', label: 'Carriage Return/Line Feed - \\r\\n' },
 					 ]
 				},
 			]
