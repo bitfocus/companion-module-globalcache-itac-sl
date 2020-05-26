@@ -18,3 +18,15 @@ There is an option to change how the commands are terminated in the button confi
   * Option 4: `\r\n` Carriage Returns and Line Feed
 
 ![Serial Parameters](images/serial.jpg?raw=true "serial parameters")
+
+
+**ser2net**
+
+The Global Cache iTach IP2SL module will also communicate with a computer running the ser2net application.  
+This has been tested on a RaspberryPi with a USB to RS232 adapter. 
+The verified use case was to control a camera that only has a RS232 VISCA port.
+
+You must configure the serial connection in ser2net.  Use port 4999 in ser2net to receive data as this is the hardcode port in the IP2SL hardware and this module. All other settings should fit your application. 
+
+An example ser2net configuration line to forward raw VISCA hex command to a camera with a 9600 baud serial port is below.
+`4999:raw:5:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT`
