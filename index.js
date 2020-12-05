@@ -142,7 +142,7 @@ instance.prototype.action = function(action) {
 				hex = '0' + hex;
 			}
 
-			cmd = new Buffer(hex, 'hex');
+			cmd = Buffer.from(hex, 'hex');
 			break;
 	}
 
