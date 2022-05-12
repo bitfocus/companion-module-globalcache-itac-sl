@@ -4,25 +4,37 @@ var debug;
 var log;
 
 function instance(system, id, config) {
-	var self = this;
+	let self = this;
 
 	// super-constructor
 	instance_skel.apply(this, arguments);
 
-	self.actions(); // export actions
+	self.getCustomVariables();
+
+	self.init_actions(); // export actions
 
 	return self;
 }
 
+instance.prototype.customVariables = [];
+
+instance.prototype.getCustomVariables = function() {
+	let self = this;
+
+	self.system.emit('custom_variables_get', (d) => {
+		self.customVariables = d;
+	});
+};
+
 instance.prototype.updateConfig = function(config) {
-	var self = this;
+	let self = this;
 
 	self.config = config;
 	self.init_tcp();
 };
 
 instance.prototype.init = function() {
-	var self = this;
+	let self = this;
 
 	debug = self.debug;
 	log = self.log;
@@ -33,7 +45,7 @@ instance.prototype.init = function() {
 };
 
 instance.prototype.init_tcp = function() {
-	var self = this;
+	let self = this;
 
 	if (self.socket !== undefined) {
 		self.socket.destroy();
@@ -47,16 +59,30 @@ instance.prototype.init_tcp = function() {
 			self.status(status, message);
 		});
 
+		self.socket.on('data', function(data) {
+			if (self.config.storereturn == true) {
+				if (self.config.convert == true) {
+					try {
+						data = data.toString();
+					}
+					catch(error) {
+						//error converting to string
+					}
+				}
+				self.system.emit('custom_variable_set_value', self.config.customvariable, data);			}
+		});
+
 		self.socket.on('error', function (err) {
 			debug("Network error", err);
 			self.log('error',"Network error: " + err.message);
+			self.socket.destroy(); //close the socket after receiving the error
 		});
 	}
 };
 
 // Return config fields for web config
 instance.prototype.config_fields = function () {
-	var self = this;
+	let self = this;
 	return [
 		{
 			type:  'textinput',
@@ -72,12 +98,35 @@ instance.prototype.config_fields = function () {
 			label: 'Information',
 			value: 'This module controls an itac IP2SL device by <a href="https://www.globalcache.com/products/itach/ip2slspecs/" target="_new">Global Cache</a>.'
 		},
+		{
+			type: 'checkbox',
+			id: 'storereturn',
+			label: 'Store Return/Response from Serial Device to Custom Variable',
+			default: false
+		},
+		{
+			type: 'dropdown',
+			label: 'Custom Variable to Store Response In',
+			id: 'customvariable',
+			choices: Object.entries(self.customVariables).map(([id, info]) => ({
+				id: id,
+				label: id,
+			})),
+			isVisible: (config) => config.storereturn == true
+		},
+		{
+			type: 'checkbox',
+			id: 'convert',
+			label: 'Convert Response to String',
+			default: false,
+			isVisible: (config) => config.storereturn == true
+		}
 	]
 };
 
 // When module gets deleted
 instance.prototype.destroy = function() {
-	var self = this;
+	let self = this;
 
 	if (self.socket !== undefined) {
 		self.socket.destroy();
@@ -86,8 +135,8 @@ instance.prototype.destroy = function() {
 	debug("destroy", self.id);;
 };
 
-instance.prototype.actions = function(system) {
-	var self = this;
+instance.prototype.init_actions = function(system) {
+	let self = this;
 	self.setActions({
 
 		'command': {
@@ -126,9 +175,9 @@ instance.prototype.actions = function(system) {
 }
 
 instance.prototype.action = function(action) {
-	var self = this;
-	var cmd  = '';
-	var opt  = action.options;
+	let self = this;
+	let cmd  = '';
+	let opt  = action.options;
 
 	switch (action.action) {
 
@@ -137,7 +186,7 @@ instance.prototype.action = function(action) {
 			break;
 
 		case 'hexcommand':
-			var hex = opt.hex.replace(/[^A-Fa-f0-9]/g,'');
+			let hex = opt.hex.replace(/[^A-Fa-f0-9]/g,'');
 			if (hex.length % 2 == 1) {
 				hex = '0' + hex;
 			}
