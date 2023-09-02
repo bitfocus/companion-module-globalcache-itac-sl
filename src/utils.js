@@ -10,7 +10,7 @@ module.exports = {
 		}
 	
 		if (self.config.host) {
-			self.socket = new TCPHelper(self.config.host, 4999);
+			self.socket = new TCPHelper(self.config.host, self.config.port);
 
 			self.socket.on('connect', function () {
 				self.setVariable('connect_status', 'Connected');

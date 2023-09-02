@@ -18,6 +18,14 @@ module.exports = {
 				regex: Regex.IP
 			},
 			{
+				type: 'textinput',
+				id: 'port',
+				label: 'Port',
+				width: 4,
+				regex: Regex.PORT,
+				default: 4999
+			},
+			{
 				type: 'checkbox',
 				id: 'convert',
 				label: 'Convert Response to String',
