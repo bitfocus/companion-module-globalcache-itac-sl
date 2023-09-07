@@ -10,10 +10,14 @@ module.exports = {
 		}
 	
 		if (self.config.host) {
+			if (self.config.port === undefined) {
+				self.config.port = 4999;
+			}
+
 			self.socket = new TCPHelper(self.config.host, self.config.port);
 
 			self.socket.on('connect', function () {
-				self.setVariable('connect_status', 'Connected');
+				self.setVariableValues({'connect_status': 'Connected'});
 				self.updateStatus(InstanceStatus.Ok);
 			});
 	
