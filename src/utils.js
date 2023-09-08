@@ -27,7 +27,8 @@ module.exports = {
 				if (self.config.convertresponse == 'string') {
 					try {
 						dataResponse = data.toString();
-						self.log('debug', 'Converted data: ' + data);
+						self.log('debug', 'Converted data: ' + dataResponse);
+						self.response = dataResponse;
 					}
 					catch(error) {
 						//error converting to string
@@ -36,14 +37,18 @@ module.exports = {
 				else if (self.config.convertresponse == 'hex') {
 					try {
 						dataResponse = data.toString('hex');
-						self.log('debug', 'Converted data: ' + data);
+						self.log('debug', 'Converted data: ' + dataResponse);
+						self.response = dataResponse;
 					}
 					catch(error) {
 						//error converting to string
 					}
 				}
+				else {
+					//no conversion
+					self.response = data;
+				}
 
-				self.response = data;
 				self.checkVariables();
 			});
 	
