@@ -22,9 +22,21 @@ module.exports = {
 			});
 	
 			self.socket.on('data', function(data) {
-				if (self.config.convert == true) {
+				self.log('debug', 'Received data: ' + data);
+
+				if (self.config.convertresponse == 'string') {
 					try {
-						data = data.toString();
+						dataResponse = data.toString();
+						self.log('debug', 'Converted data: ' + data);
+					}
+					catch(error) {
+						//error converting to string
+					}
+				}
+				else if (self.config.convertresponse == 'hex') {
+					try {
+						dataResponse = data.toString('hex');
+						self.log('debug', 'Converted data: ' + data);
 					}
 					catch(error) {
 						//error converting to string

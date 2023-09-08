@@ -26,11 +26,16 @@ module.exports = {
 				default: 4999
 			},
 			{
-				type: 'checkbox',
-				id: 'convert',
-				label: 'Convert Response to String',
-				default: false
-			}
+				type: 'dropdown',
+				id: 'convertresponse',
+				label: 'Convert TCP Response Format',
+				default: 'none',
+				choices: [
+					{ id: 'none', label: 'No conversion' },
+					{ id: 'hex', label: 'To Hex' },
+					{ id: 'string', label: 'To String' },
+				]
+			},
 		]
 	},
 }

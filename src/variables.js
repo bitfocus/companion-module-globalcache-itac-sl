@@ -3,7 +3,7 @@ module.exports = {
 		let self = this;
 		let variables = [];
 
-		variables.push({ name: 'response', label: 'Last Response from Device' });
+		variables.push({ variableId: 'response', name: 'Last Response from Device' });
 
 		self.setVariableDefinitions(variables);
 	},
