@@ -1,13 +1,19 @@
 {
+	"$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+	"type": "connection",
 	"id": "globalcache-itac-sl",
 	"name": "globalcache-itac-sl",
 	"shortname": "ip2sl",
-	"description": "Companion Module for Global Cache IP to Serial device.",
+	"description": "Send serial (RS-232) data through Global Cache IP to Serial devices (iTach IP2SL, GC-100) or ser2net.",
 	"version": "0.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-globalcache-itac-sl.git",
 	"bugs": "https://github.com/bitfocus/companion-module-globalcache-itac-sl/issues",
 	"maintainers": [
+		{
+			"name": "Bitfocus AS",
+			"email": "connections@bitfocus.io"
+		},
 		{
 			"name": "Casey Selph",
 			"email": "cxselph@gmail.com"
@@ -19,16 +25,12 @@
 	],
 	"legacyIds": [],
 	"runtime": {
-		"type": "node18",
+		"type": "node26",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../index.js"
+		"entrypoint": "../dist/main.js"
 	},
 	"manufacturer": "Global Cache",
-	"products": [
-		"iTach IP2SL"
-	],
-	"keywords": [
-		"Generic"
-	]
+	"products": ["iTach IP2SL", "GC-100"],
+	"keywords": ["Serial", "RS-232", "RS232", "ser2net"]
 }
