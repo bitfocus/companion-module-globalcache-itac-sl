@@ -10,7 +10,9 @@ Requires Companion 5.0 or later or Bitfocus Buttons 1.8 or later.
 
 ### Added
 
+- A "Response Matches" feedback, to change a button when the device's response equals, contains or matches a regular expression, compared as text or hex.
 - A `response_hex` variable, showing the last data received as hex alongside the `response` variable.
+- A `response_time` variable, the time of the last response, which changes on every response so triggers can run on a repeated reply.
 - Variables can be used in the "Command" and "HEX Command" actions.
 
 ### Changed

@@ -24,12 +24,20 @@ Make sure the baud rate, options and serial cable match your serial device.
 
 Both accept variables.
 
+### Available Feedbacks
+
+- **Response Matches**: the last response from the device matches the value. Choose whether to compare it as Text or Hex, and whether it must equal the value, contain it, or match a regular expression.
+  - In Hex, separators are ignored, so `1C 01 20` matches `1c0120`, and the comparison ignores case.
+  - Many devices end their replies with a carriage return or line feed, which an Equals match must include; Contains, or a regular expression, avoids that.
+  - The value accepts variables.
+
 ### Available Variables
 
 - `response`: the last data received from the device, as text
 - `response_hex`: the same data, as hex
+- `response_time`: when it was received, as Unix time in milliseconds. This changes on every response, even when the device sends the same reply again, so a trigger watching it runs for each response.
 
-Serial data has no message boundaries, so a long reply may arrive in more than one part, and the variables show the last part received. They are empty until data has been received.
+Serial data has no message boundaries, so a long reply may arrive in more than one part, and the variables and feedback use the last part received. The variables are empty until data has been received.
 
 ### ser2net
 

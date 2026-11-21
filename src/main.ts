@@ -1,6 +1,7 @@
 import { InstanceBase, InstanceStatus, TCPHelper, type SomeCompanionConfigField } from '@companion-module/base'
 import { UpdateActions, type ActionsSchema } from './actions.js'
 import { GetConfigFields, type ModuleConfig } from './config.js'
+import { UpdateFeedbacks, type FeedbacksSchema } from './feedbacks.js'
 import { UpgradeScripts } from './upgrades.js'
 import { UpdateResponse, UpdateVariableDefinitions, type VariablesSchema } from './variables.js'
 
@@ -8,7 +9,7 @@ export type ModuleSchema = {
 	config: ModuleConfig
 	secrets: undefined
 	actions: ActionsSchema
-	feedbacks: Record<string, never>
+	feedbacks: FeedbacksSchema
 	variables: VariablesSchema
 }
 
@@ -21,6 +22,7 @@ function describe(data: string | Buffer): string {
 
 export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	config!: ModuleConfig
+	lastResponse: Buffer | undefined
 
 	#socket: TCPHelper | undefined
 	/** Last network error logged, so a retry loop does not log the same failure again */
@@ -32,6 +34,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 
 	async init(config: ModuleConfig): Promise<void> {
 		UpdateActions(this)
+		UpdateFeedbacks(this)
 		UpdateVariableDefinitions(this)
 		await this.configUpdated(config)
 	}
@@ -86,7 +89,9 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 		// Serial data has no framing, so each chunk received is treated as the response
 		socket.on('data', (data) => {
 			this.log('debug', `Received: ${describe(data)}`)
-			UpdateResponse(this, data)
+			this.lastResponse = data
+			UpdateResponse(this, data, Date.now())
+			this.checkFeedbacks('responseMatches')
 		})
 
 		socket.on('error', (err) => {
