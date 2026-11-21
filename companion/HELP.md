@@ -1,32 +1,48 @@
-**Global Cache iTach IP2SL**
+## GlobalCache iTach IP2SL / GC-100
 
-iTach serial is bi-directional, RS232 communication. All communication is 8 data bits and one stop bit. Parity, hardware flow control, and baud rate are set through the iTach internal web page, with baud rate enabled up to 115.2 Kbaud.
+This module sends serial (RS-232) data through a GlobalCache iTach IP2SL, a serial port of a GC-100, or a computer running ser2net.
 
-If you are using the `Command` action, all serial data is passed through without interpretation or conversion.
+### Configuration
 
-If you use the `HEX based command` action, the hex values you enter will be converted and sent as binary data as expected.
+- Type in the IP address of the device.
+- Set the port. The iTach IP2SL uses port 4999. On a GC-100, the first serial port is 4999, the second 5000.
 
-If a serial connector is not configured correctly, buffer overflows (indicating data loss), or parity errors will occur. Any errors will be captured and presented on the Serial web page to aid in proper setup. `Settings such as Serial Multiconnection Mode, 7 data bit mode, or 2 stop bit mode are only accessible from the Serial web page.`
+Serial communication is 8 data bits and one stop bit. Parity, hardware flow control and baud rate (up to 115.2 Kbaud) are set on the device's own web page, as are Serial Multiconnection Mode, 7 data bit mode and 2 stop bit mode. If the serial settings don't match the connected device, buffer overflows (data loss) or parity errors will occur; these are shown on the device's Serial web page.
 
-Please make sure you have the proper baud rate settings, options, and serial cable that matches your serial device.
+Make sure the baud rate, options and serial cable match your serial device.
 
-There is an option to change how the commands are terminated in the button config to give you flexibility depending on application requirements.
+![Serial Parameters](images/serial.jpg?raw=true 'serial parameters')
 
-  * Option 1: No Termination, does not alter your command at all.
-  * Option 2: `\r` Carriage Return - Default settings
-  * Option 3: `\n` Line Feed
-  * Option 4: `\r\n` Carriage Returns and Line Feed
+### Available Actions
 
-![Serial Parameters](images/serial.jpg?raw=true "serial parameters")
+- **Command**: sends the text as it is, without interpretation or conversion, followed by the selected line termination:
+  - No termination
+  - `\r` Carriage Return (default)
+  - `\n` Line Feed
+  - `\r\n` Carriage Return and Line Feed
+- **HEX Command**: sends the hex values entered as bytes, e.g. `81 01 04 00 02 FF`. Characters other than 0-9 and A-F are ignored.
 
+Both accept variables.
 
-**ser2net**
+### Available Feedbacks
 
-The Global Cache iTach IP2SL module will also communicate with a computer running the ser2net application.  
-This has been tested on a RaspberryPi with a USB to RS232 adapter. 
-The verified use case was to control a camera that only has a RS232 VISCA port.
+- **Response Matches**: the last response from the device matches the value. Choose whether to compare it as Text or Hex, and whether it must equal the value, contain it, or match a regular expression.
+  - In Hex, separators are ignored, so `1C 01 20` matches `1c0120`, and the comparison ignores case.
+  - Many devices end their replies with a carriage return or line feed, which an Equals match must include; Contains, or a regular expression, avoids that.
+  - The value accepts variables.
 
-You must configure the serial connection in ser2net.  Use port 4999 in ser2net to receive data as this is the hardcode port in the IP2SL hardware and this module. All other settings should fit your application. 
+### Available Variables
 
-An example ser2net configuration line to forward raw VISCA hex command to a camera with a 9600 baud serial port is below.
+- `response`: the last data received from the device, as text
+- `response_hex`: the same data, as hex
+- `response_time`: when it was received, as Unix time in milliseconds. This changes on every response, even when the device sends the same reply again, so a trigger watching it runs for each response.
+
+Serial data has no message boundaries, so a long reply may arrive in more than one part, and the variables and feedback use the last part received. The variables are empty until data has been received.
+
+### ser2net
+
+The module also works with a computer running ser2net, for example a Raspberry Pi with a USB to RS-232 adapter (this has been used to control a camera with only an RS-232 VISCA port).
+
+Configure the serial connection in ser2net, and set the module's port to the one ser2net listens on. An example ser2net line to forward raw VISCA hex commands to a camera with a 9600 baud serial port on port 4999:
+
 `4999:raw:5:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT`
